@@ -1,5 +1,6 @@
 package com.bryan.ECommerceApi.service;
 
+import com.bryan.ECommerceApi.exception.EmailAlreadyExistsException;
 import com.bryan.ECommerceApi.model.User;
 import com.bryan.ECommerceApi.model.UserPrincipal;
 import com.bryan.ECommerceApi.model.dto.AuthResponseDto;
@@ -22,6 +23,10 @@ public class AuthService {
     }
 
     public AuthResponseDto register(RegisterRequestDto dto){
+        if (userService.existsByEmail(dto.email())) {
+            throw new EmailAlreadyExistsException("Email already exists");
+        }
+
         User user = userService.create(dto.name(),dto.email(), dto.password(), dto.isAdmin());
         UserPrincipal userPrincipal = new UserPrincipal(user);
         String token = jwtService.getToken(userPrincipal);

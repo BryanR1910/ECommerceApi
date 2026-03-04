@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("auth")
+@RequestMapping("/auth")
 public class AuthController {
     private final AuthService authService;
 

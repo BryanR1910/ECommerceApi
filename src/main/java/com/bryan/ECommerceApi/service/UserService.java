@@ -25,4 +25,8 @@ public class UserService {
     public User findByEmail(String email) {
         return userRepo.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException(email));
     }
+
+    public boolean existsByEmail(String email){
+        return userRepo.existsByEmail(email);
+    }
 }

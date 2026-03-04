@@ -41,4 +41,10 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
    }
 
+   @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse> handlerEmailAlreadyExists(EmailAlreadyExistsException ex, WebRequest wb){
+        ApiResponse apiResponse = new ApiResponse(wb.getDescription(false), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+   }
+
 }
