@@ -6,7 +6,10 @@ import com.bryan.ECommerceApi.model.dto.CreateProductRequestDto;
 import com.bryan.ECommerceApi.model.dto.ProductResponseDto;
 import com.bryan.ECommerceApi.model.dto.UpdateProductRequestDto;
 import com.bryan.ECommerceApi.repository.ProductRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 
 @Service
 public class ProductService {
@@ -47,6 +50,17 @@ public class ProductService {
         Product product = productRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
 
         productRepo.delete(product);
+    }
+
+    public ProductResponseDto findById(Long id){
+        Product product = productRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
+
+        return ProductResponseDto.fromEntity(product);
+    }
+
+    public Page<ProductResponseDto> getAll(Pageable pageable){
+        return productRepo.findAll(pageable)
+                .map(ProductResponseDto::fromEntity);
     }
 
 

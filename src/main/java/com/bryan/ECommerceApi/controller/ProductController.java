@@ -5,9 +5,11 @@ import com.bryan.ECommerceApi.model.dto.ProductResponseDto;
 import com.bryan.ECommerceApi.model.dto.UpdateProductRequestDto;
 import com.bryan.ECommerceApi.service.ProductService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +38,19 @@ public class ProductController {
     public ResponseEntity<Void> delete(@PathVariable("id") Long id){
         productService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponseDto> getById(@PathVariable("id") Long id){
+        ProductResponseDto response = productService.findById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<ProductResponseDto>> getAll(
+            @PageableDefault(size = 10, sort = "name") Pageable pageable
+            ){
+        return ResponseEntity.ok(productService.getAll(pageable));
     }
 
 
