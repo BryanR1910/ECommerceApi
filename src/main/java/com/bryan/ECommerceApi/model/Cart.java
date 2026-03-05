@@ -21,6 +21,11 @@ public class Cart {
     public Cart() {
     }
 
+    public Cart(User user) {
+        createdAt = Instant.now();
+        this.user = user;
+    }
+
     public Long getId() {
         return id;
     }
@@ -43,5 +48,13 @@ public class Cart {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public List<CartItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<CartItem> items) {
+        this.items = items;
     }
 }

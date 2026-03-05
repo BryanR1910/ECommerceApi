@@ -14,11 +14,13 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     private final JwtService jwtService;
     private final UserService userService;
+    private final CartService cartService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthService(JwtService jwtService, UserService userService, AuthenticationManager authenticationManager) {
+    public AuthService(JwtService jwtService, UserService userService, CartService cartService, AuthenticationManager authenticationManager) {
         this.jwtService = jwtService;
         this.userService = userService;
+        this.cartService = cartService;
         this.authenticationManager = authenticationManager;
     }
 
@@ -28,6 +30,7 @@ public class AuthService {
         }
 
         User user = userService.create(dto.name(),dto.email(), dto.password(), dto.isAdmin());
+        cartService.create(user);
         UserPrincipal userPrincipal = new UserPrincipal(user);
         String token = jwtService.getToken(userPrincipal);
 

@@ -63,6 +63,11 @@ public class ProductService {
                 .map(ProductResponseDto::fromEntity);
     }
 
+    public Product findEntityById(Long id) {
+        return productRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
+    }
+
 
 
 }
