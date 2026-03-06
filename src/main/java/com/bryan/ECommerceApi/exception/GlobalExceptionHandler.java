@@ -1,6 +1,10 @@
 package com.bryan.ECommerceApi.exception;
 
 import com.bryan.ECommerceApi.model.payload.ApiResponse;
+import com.stripe.exception.AuthenticationException;
+import com.stripe.exception.CardException;
+import com.stripe.exception.InvalidRequestException;
+import com.stripe.exception.StripeException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -52,5 +56,35 @@ public class GlobalExceptionHandler {
         ApiResponse apiResponse = new ApiResponse(wb.getDescription(false), ex.getMessage());
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
    }
+
+   @ExceptionHandler(EmptyCartException.class)
+   public ResponseEntity<ApiResponse> handlerEmptyCart(EmptyCartException ex, WebRequest wb){
+       ApiResponse apiResponse = new ApiResponse(wb.getDescription(false), ex.getMessage());
+       return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+   }
+
+    @ExceptionHandler(CardException.class)
+    public ResponseEntity<ApiResponse> handlerCardException(CardException ex, WebRequest wb) {
+        ApiResponse apiResponse = new ApiResponse(wb.getDescription(false), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).body(apiResponse);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ApiResponse> handlerStripeAuthException(AuthenticationException ex, WebRequest wb) {
+        ApiResponse apiResponse = new ApiResponse(wb.getDescription(false), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
+    }
+
+    @ExceptionHandler(InvalidRequestException.class)
+    public ResponseEntity<ApiResponse> handlerInvalidRequestException(InvalidRequestException ex, WebRequest wb) {
+        ApiResponse apiResponse = new ApiResponse(wb.getDescription(false), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+    }
+
+    @ExceptionHandler(StripeException.class)
+    public ResponseEntity<ApiResponse> handlerStripeException(StripeException ex, WebRequest wb){
+        ApiResponse apiResponse = new ApiResponse(wb.getDescription(false), ex.getMessage());
+        return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).body(apiResponse);
+    }
 
 }

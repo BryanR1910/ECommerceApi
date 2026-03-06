@@ -1,0 +1,94 @@
+package com.bryan.ECommerceApi.service;
+
+import com.bryan.ECommerceApi.exception.EmptyCartException;
+import com.bryan.ECommerceApi.exception.ResourceNotFoundException;
+import com.bryan.ECommerceApi.model.Cart;
+import com.bryan.ECommerceApi.model.CartItem;
+import com.bryan.ECommerceApi.model.Order;
+import com.bryan.ECommerceApi.model.User;
+import com.bryan.ECommerceApi.model.dto.CheckoutResponseDto;
+import com.bryan.ECommerceApi.model.enums.Status;
+import com.bryan.ECommerceApi.repository.OrderRepo;
+import com.stripe.exception.StripeException;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class OrderService {
+    private final OrderRepo orderRepo;
+    private final UserService userService;
+    private final CartService cartService;
+    private final OrderItemService orderItemService;
+    private final StripeService stripeService;
+
+    public OrderService(OrderRepo orderRepo, UserService userService, CartService cartService, OrderItemService orderItemService, StripeService stripeService) {
+        this.orderRepo = orderRepo;
+        this.userService = userService;
+        this.cartService = cartService;
+        this.orderItemService = orderItemService;
+        this.stripeService = stripeService;
+    }
+
+    public CheckoutResponseDto checkout(String email) throws StripeException {
+        User user = userService.findByEmail(email);
+        Cart cart = cartService.getEntityByUser(user);
+
+        if(cart.getItems().isEmpty()) throw new EmptyCartException();
+
+        List<CartItem> cartItems = cart.getItems();
+        BigDecimal total = cartItems.stream()
+                .map((item) -> item.getProduct().getPrice()
+                        .multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        //if find pending order
+        Optional<Order> pendingOrder = orderRepo.findByUserAndStatus(user, Status.PENDING);
+
+        if(pendingOrder.isPresent()){
+            Order order = pendingOrder.get();
+            order.setTotal(total);
+            orderItemService.deleteByOrder(order); // delete old items
+            orderItemService.addItems(cart, order); // add new items
+            String clientSecret = stripeService.updatePaymentIntent(order.getStripePaymentId(), total);
+            orderRepo.save(order);
+            return CheckoutResponseDto.fromEntity(order, clientSecret);
+        }
+        // create new order
+        Order order = new Order(total, Status.PENDING, user);
+        Order savedOrder = orderRepo.save(order);
+
+        orderItemService.addItems(cart, savedOrder);
+
+        // generate stripe payment
+        String clientSecret = stripeService.createPaymentIntent(total, "usd");
+        String paymentIntentId = clientSecret.split("_secret_")[0]; // client secret: pi_xxxxx_secret_xxxxx
+
+        savedOrder.setStripePaymentId(paymentIntentId);
+        orderRepo.save(savedOrder);
+
+        return new CheckoutResponseDto(
+                savedOrder.getId(),
+                total,
+                savedOrder.getStatus(),
+                clientSecret
+        );
+    }
+
+    public void markAsPaid(String paymentIntentId) {
+        Order order = orderRepo.findByStripePaymentId(paymentIntentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "paymentIntentId", paymentIntentId));
+        order.setStatus(Status.PAID);
+        orderRepo.save(order);
+    }
+
+    public void markAsFailed(String paymentIntentId) {
+        Order order = orderRepo.findByStripePaymentId(paymentIntentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "paymentIntentId", paymentIntentId));
+        order.setStatus(Status.FAILED);
+        orderRepo.save(order);
+    }
+
+}

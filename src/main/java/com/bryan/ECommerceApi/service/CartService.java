@@ -72,4 +72,9 @@ public class CartService {
 
         return cartItemService.updateQuantityByCartItemId(itemId, dto.quantity());
     }
+
+    public Cart getEntityByUser(User user){
+        return cartRepo.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("Cart", "User", user.getEmail()));
+    }
+
 }

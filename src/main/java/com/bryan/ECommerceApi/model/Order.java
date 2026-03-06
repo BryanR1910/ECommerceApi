@@ -17,6 +17,7 @@ public class Order {
     private BigDecimal total;
     private Status status;
     private Instant createdAt;
+    @Column(unique = true)
     private String stripePaymentId;
     @ManyToOne
     @JoinColumn(name = "user_id")
@@ -25,6 +26,13 @@ public class Order {
     private List<OrderItem> items = new ArrayList<>();
 
     public Order() {
+    }
+
+    public Order(BigDecimal total, Status status, User user) {
+        this.total = total;
+        this.status = status;
+        createdAt = Instant.now();
+        this.user = user;
     }
 
     public Long getId() {

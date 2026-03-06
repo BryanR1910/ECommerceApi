@@ -1,7 +1,5 @@
 package com.bryan.ECommerceApi.controller;
 
-import com.bryan.ECommerceApi.model.Cart;
-import com.bryan.ECommerceApi.model.CartItem;
 import com.bryan.ECommerceApi.model.dto.CartItemResponseDto;
 import com.bryan.ECommerceApi.model.dto.CartResponseDto;
 import com.bryan.ECommerceApi.model.dto.ItemRequestDto;

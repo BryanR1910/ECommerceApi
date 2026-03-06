@@ -21,6 +21,13 @@ public class OrderItem {
     public OrderItem() {
     }
 
+    public OrderItem(Long quantity, BigDecimal priceAtPurchase, Order order, Product product) {
+        this.quantity = quantity;
+        this.priceAtPurchase = priceAtPurchase;
+        this.order = order;
+        this.product = product;
+    }
+
     public Long getId() {
         return id;
     }
