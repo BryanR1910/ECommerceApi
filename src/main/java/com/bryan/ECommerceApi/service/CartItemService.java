@@ -6,10 +6,8 @@ import com.bryan.ECommerceApi.model.Cart;
 import com.bryan.ECommerceApi.model.CartItem;
 import com.bryan.ECommerceApi.model.Product;
 import com.bryan.ECommerceApi.model.dto.CartItemResponseDto;
-import com.bryan.ECommerceApi.model.dto.CartResponseDto;
 import com.bryan.ECommerceApi.model.dto.ItemRequestDto;
 import com.bryan.ECommerceApi.repository.CartItemRepo;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -50,9 +48,9 @@ public class CartItemService {
         cart.getItems().add(item);
     }
 
-    public void deleteItem(Long cartItemId){
-        CartItem item = cartItemRepo.findById(cartItemId).orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", cartItemId));
-        cartItemRepo.delete(item);
+    public void deleteItem(Long cartItemId, Cart cart){
+        CartItem cartItem = cartItemRepo.findById(cartItemId).orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", cartItemId));
+        cartItemRepo.delete(cartItem);
     }
 
     public CartItemResponseDto updateQuantityByCartItemId(Long itemId, Long quantity) {

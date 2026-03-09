@@ -2,15 +2,13 @@ package com.bryan.ECommerceApi.service;
 
 import com.bryan.ECommerceApi.exception.EmptyCartException;
 import com.bryan.ECommerceApi.exception.ResourceNotFoundException;
-import com.bryan.ECommerceApi.model.Cart;
-import com.bryan.ECommerceApi.model.CartItem;
-import com.bryan.ECommerceApi.model.Order;
-import com.bryan.ECommerceApi.model.User;
+import com.bryan.ECommerceApi.model.*;
 import com.bryan.ECommerceApi.model.dto.CheckoutResponseDto;
 import com.bryan.ECommerceApi.model.enums.Status;
 import com.bryan.ECommerceApi.repository.OrderRepo;
 import com.stripe.exception.StripeException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -23,15 +21,18 @@ public class OrderService {
     private final CartService cartService;
     private final OrderItemService orderItemService;
     private final StripeService stripeService;
+    private final ProductService productService;
 
-    public OrderService(OrderRepo orderRepo, UserService userService, CartService cartService, OrderItemService orderItemService, StripeService stripeService) {
+    public OrderService(OrderRepo orderRepo, UserService userService, CartService cartService, OrderItemService orderItemService, StripeService stripeService, ProductService productService) {
         this.orderRepo = orderRepo;
         this.userService = userService;
         this.cartService = cartService;
         this.orderItemService = orderItemService;
         this.stripeService = stripeService;
+        this.productService = productService;
     }
 
+    @Transactional()
     public CheckoutResponseDto checkout(String email) throws StripeException {
         User user = userService.findByEmail(email);
         Cart cart = cartService.getEntityByUser(user);
@@ -75,6 +76,14 @@ public class OrderService {
                 savedOrder.getStatus(),
                 clientSecret
         );
+    }
+
+    private void completeOrder(Order order){
+        for(OrderItem item : order.getItems()){
+            productService.reduceStock(item.getId(), item.getQuantity());
+        }
+
+        cartService.cleanByUser(order.getUser());
     }
 
     public void markAsPaid(String paymentIntentId) {

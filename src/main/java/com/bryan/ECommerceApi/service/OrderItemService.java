@@ -5,6 +5,7 @@ import com.bryan.ECommerceApi.model.CartItem;
 import com.bryan.ECommerceApi.model.Order;
 import com.bryan.ECommerceApi.model.OrderItem;
 import com.bryan.ECommerceApi.repository.OrderItemRepo;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,6 +36,6 @@ public class OrderItemService {
     }
 
     public void deleteByOrder(Order order){
-        orderItemRepo.deleteByOrder(order);
+        order.getItems().clear();
     }
 }

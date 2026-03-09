@@ -1,5 +1,6 @@
 package com.bryan.ECommerceApi.service;
 
+import com.bryan.ECommerceApi.exception.InsufficientStockException;
 import com.bryan.ECommerceApi.exception.ResourceNotFoundException;
 import com.bryan.ECommerceApi.model.Product;
 import com.bryan.ECommerceApi.model.dto.CreateProductRequestDto;
@@ -30,6 +31,10 @@ public class ProductService {
         );
         Product savedProduct = productRepo.save(product);
         return ProductResponseDto.fromEntity(savedProduct);
+    }
+
+    public void reduceStock(Long id, Long quantity){
+        productRepo.reduceStock(id, quantity);
     }
 
     public ProductResponseDto update(Long id, UpdateProductRequestDto dto){

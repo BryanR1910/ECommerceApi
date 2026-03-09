@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Service
 public class StripeService {
 
-    @Value("@{stripe.secret.key}")
+    @Value("${stripe.secret.key}")
     private String secretKey;
 
     public String createPaymentIntent(BigDecimal total, String currency) throws StripeException {

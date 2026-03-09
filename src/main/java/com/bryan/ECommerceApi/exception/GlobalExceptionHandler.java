@@ -1,10 +1,7 @@
 package com.bryan.ECommerceApi.exception;
 
 import com.bryan.ECommerceApi.model.payload.ApiResponse;
-import com.stripe.exception.AuthenticationException;
-import com.stripe.exception.CardException;
-import com.stripe.exception.InvalidRequestException;
-import com.stripe.exception.StripeException;
+import com.stripe.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -85,6 +82,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handlerStripeException(StripeException ex, WebRequest wb){
         ApiResponse apiResponse = new ApiResponse(wb.getDescription(false), ex.getMessage());
         return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).body(apiResponse);
+    }
+
+    @ExceptionHandler(SignatureVerificationException.class)
+    public ResponseEntity<ApiResponse> handleStripeSignature(SignatureVerificationException ex, WebRequest wb) {
+        ApiResponse apiResponse = new ApiResponse(wb.getDescription(false), "Invalid Stripe signature");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
 
 }
