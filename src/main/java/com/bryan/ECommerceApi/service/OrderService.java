@@ -82,8 +82,9 @@ public class OrderService {
         );
     }
 
-    public Page<OrderSummaryResponseDto> getAll(Pageable pageable){
-        return orderRepo.findAll(pageable)
+    public Page<OrderSummaryResponseDto> getAll(Pageable pageable, String email){
+        User user = userService.findByEmail(email);
+        return orderRepo.findByUser(user, pageable)
                 .map(OrderSummaryResponseDto::fromEntity);
     }
 
@@ -110,6 +111,7 @@ public class OrderService {
         Order order = orderRepo.findByStripePaymentId(paymentIntentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "paymentIntentId", paymentIntentId));
         order.setStatus(Status.PAID);
+        completeOrder(order);
         orderRepo.save(order);
     }
 

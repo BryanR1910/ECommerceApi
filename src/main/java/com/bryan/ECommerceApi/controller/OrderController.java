@@ -32,9 +32,11 @@ public class OrderController {
 
     @GetMapping()
     public ResponseEntity<Page<OrderSummaryResponseDto>> getAll(
-            @PageableDefault(size = 10, sort = "id") Pageable pageable
+            @PageableDefault(size = 10, sort = "id") Pageable pageable,
+            Authentication authentication
             ){
-        return ResponseEntity.ok(orderService.getAll(pageable));
+        String email = authentication.getName();
+        return ResponseEntity.ok(orderService.getAll(pageable, email));
     }
 
     @GetMapping("{id}")
