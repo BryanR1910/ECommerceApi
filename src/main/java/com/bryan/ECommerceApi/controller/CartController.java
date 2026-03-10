@@ -2,7 +2,7 @@ package com.bryan.ECommerceApi.controller;
 
 import com.bryan.ECommerceApi.model.dto.CartItemResponseDto;
 import com.bryan.ECommerceApi.model.dto.CartResponseDto;
-import com.bryan.ECommerceApi.model.dto.ItemRequestDto;
+import com.bryan.ECommerceApi.model.dto.CartItemRequestDto;
 import com.bryan.ECommerceApi.model.dto.UpdateCartItemRequestDto;
 import com.bryan.ECommerceApi.service.CartService;
 import jakarta.validation.Valid;
@@ -28,7 +28,7 @@ public class CartController {
     }
 
     @PostMapping("/items")
-    public ResponseEntity<CartResponseDto> addItem(@Valid @RequestBody ItemRequestDto dto, Authentication authentication){
+    public ResponseEntity<CartResponseDto> addItem(@Valid @RequestBody CartItemRequestDto dto, Authentication authentication){
         String email = authentication.getName();
         CartResponseDto response = cartService.addItem(dto, email);
 

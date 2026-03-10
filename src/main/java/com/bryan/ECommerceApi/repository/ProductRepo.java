@@ -12,6 +12,6 @@ import org.springframework.stereotype.Repository;
 public interface ProductRepo extends JpaRepository<Product, Long> {
     @Modifying
     @Transactional
-    @Query("UPDATE Product SET p.stock = p.stock - :quantity WHERE p.id = :id AND p.stock >= :quantity")
+    @Query("UPDATE Product p SET p.stock = p.stock - :quantity WHERE p.id = :id AND p.stock >= :quantity")
     int reduceStock(@Param("id") Long id, @Param("quantity") Long quantity);
 }

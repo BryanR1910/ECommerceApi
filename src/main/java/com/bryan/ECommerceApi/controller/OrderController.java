@@ -1,14 +1,17 @@
 package com.bryan.ECommerceApi.controller;
 
 import com.bryan.ECommerceApi.model.dto.CheckoutResponseDto;
+import com.bryan.ECommerceApi.model.dto.OrderResponseDto;
+import com.bryan.ECommerceApi.model.dto.OrderSummaryResponseDto;
 import com.bryan.ECommerceApi.service.OrderService;
 import com.stripe.exception.StripeException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("orders")
@@ -25,6 +28,21 @@ public class OrderController {
         CheckoutResponseDto response = orderService.checkout(email);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping()
+    public ResponseEntity<Page<OrderSummaryResponseDto>> getAll(
+            @PageableDefault(size = 10, sort = "id") Pageable pageable
+            ){
+        return ResponseEntity.ok(orderService.getAll(pageable));
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<OrderResponseDto> getById(Authentication authentication, @PathVariable("id") Long id){
+        String email = authentication.getName();
+        OrderResponseDto response = orderService.getById(email, id);
+
+        return ResponseEntity.ok(response);
     }
 
 }

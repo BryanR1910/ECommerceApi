@@ -5,7 +5,7 @@ import com.bryan.ECommerceApi.model.Cart;
 import com.bryan.ECommerceApi.model.User;
 import com.bryan.ECommerceApi.model.dto.CartItemResponseDto;
 import com.bryan.ECommerceApi.model.dto.CartResponseDto;
-import com.bryan.ECommerceApi.model.dto.ItemRequestDto;
+import com.bryan.ECommerceApi.model.dto.CartItemRequestDto;
 import com.bryan.ECommerceApi.model.dto.UpdateCartItemRequestDto;
 import com.bryan.ECommerceApi.repository.CartRepo;
 import org.springframework.stereotype.Service;
@@ -34,7 +34,7 @@ public class CartService {
         return CartResponseDto.fromEntity(cart);
     }
 
-    public CartResponseDto addItem(ItemRequestDto dto, String email){
+    public CartResponseDto addItem(CartItemRequestDto dto, String email){
         User user = userService.findByEmail(email);
         Cart cart = cartRepo.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("Cart", "User", user.getEmail()));
         cartItemService.addItem(cart, dto);

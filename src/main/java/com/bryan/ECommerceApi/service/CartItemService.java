@@ -6,7 +6,7 @@ import com.bryan.ECommerceApi.model.Cart;
 import com.bryan.ECommerceApi.model.CartItem;
 import com.bryan.ECommerceApi.model.Product;
 import com.bryan.ECommerceApi.model.dto.CartItemResponseDto;
-import com.bryan.ECommerceApi.model.dto.ItemRequestDto;
+import com.bryan.ECommerceApi.model.dto.CartItemRequestDto;
 import com.bryan.ECommerceApi.repository.CartItemRepo;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class CartItemService {
         this.productService = productService;
     }
 
-    public void addItem(Cart cart, ItemRequestDto dto){
+    public void addItem(Cart cart, CartItemRequestDto dto){
         Product product = productService.findEntityById(dto.productId());
 
         Optional<CartItem> existingItem = cart.getItems().stream()

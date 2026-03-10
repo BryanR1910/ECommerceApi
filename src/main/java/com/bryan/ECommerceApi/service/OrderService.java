@@ -4,9 +4,13 @@ import com.bryan.ECommerceApi.exception.EmptyCartException;
 import com.bryan.ECommerceApi.exception.ResourceNotFoundException;
 import com.bryan.ECommerceApi.model.*;
 import com.bryan.ECommerceApi.model.dto.CheckoutResponseDto;
+import com.bryan.ECommerceApi.model.dto.OrderResponseDto;
+import com.bryan.ECommerceApi.model.dto.OrderSummaryResponseDto;
 import com.bryan.ECommerceApi.model.enums.Status;
 import com.bryan.ECommerceApi.repository.OrderRepo;
 import com.stripe.exception.StripeException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,6 +80,22 @@ public class OrderService {
                 savedOrder.getStatus(),
                 clientSecret
         );
+    }
+
+    public Page<OrderSummaryResponseDto> getAll(Pageable pageable){
+        return orderRepo.findAll(pageable)
+                .map(OrderSummaryResponseDto::fromEntity);
+    }
+
+    public OrderResponseDto getById(String email, Long id){
+        User user = userService.findByEmail(email);
+        Order order = orderRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
+
+        if(!order.getUser().getId().equals(user.getId())) {
+            throw new ResourceNotFoundException("Order", "id", id);
+        }
+
+        return OrderResponseDto.fromEntity(order);
     }
 
     private void completeOrder(Order order){
