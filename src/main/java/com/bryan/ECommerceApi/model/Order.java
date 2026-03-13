@@ -19,7 +19,7 @@ public class Order {
     private Instant createdAt;
     @Column(unique = true)
     private String stripePaymentId;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)

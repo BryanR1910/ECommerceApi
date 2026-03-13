@@ -17,8 +17,6 @@ public class User {
     private String email;
     private String password;
     private boolean isAdmin;
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Cart cart;
     @OneToMany(mappedBy = "user")
     private List<Order> orders = new ArrayList<>();
 

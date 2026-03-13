@@ -30,7 +30,8 @@ public class CartService {
 
     public CartResponseDto getByUserEmail(String email){
         User user = userService.findByEmail(email);
-        Cart cart = cartRepo.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("Cart", "User", email));
+        Cart cart = cartRepo.findByUserWithItems(user)
+                .orElseThrow(() -> new ResourceNotFoundException("Cart", "User", email));
         return CartResponseDto.fromEntity(cart);
     }
 
