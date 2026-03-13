@@ -34,7 +34,11 @@ public class ProductService {
     }
 
     public void reduceStock(Long id, Long quantity){
-        productRepo.reduceStock(id, quantity);
+        Product product = productRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
+        int updated = productRepo.reduceStock(id, quantity);
+        if(updated == 0){
+            throw new InsufficientStockException(product.getName());
+        }
     }
 
     public ProductResponseDto update(Long id, UpdateProductRequestDto dto){

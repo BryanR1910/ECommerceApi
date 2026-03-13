@@ -1,6 +1,7 @@
 package com.bryan.ECommerceApi.service;
 
 import com.bryan.ECommerceApi.exception.EmptyCartException;
+import com.bryan.ECommerceApi.exception.InsufficientStockException;
 import com.bryan.ECommerceApi.exception.ResourceNotFoundException;
 import com.bryan.ECommerceApi.model.*;
 import com.bryan.ECommerceApi.model.dto.CheckoutResponseDto;
@@ -36,20 +37,30 @@ public class OrderService {
         this.productService = productService;
     }
 
+    private void validateStock(List<CartItem> cartItems) {
+        for (CartItem item : cartItems) {
+            if (item.getQuantity() > item.getProduct().getStock()) {
+                throw new InsufficientStockException(item.getProduct().getName());
+            }
+        }
+    }
+
     @Transactional()
     public CheckoutResponseDto checkout(String email) throws StripeException {
         User user = userService.findByEmail(email);
         Cart cart = cartService.getEntityByUser(user);
-
-        if(cart.getItems().isEmpty()) throw new EmptyCartException();
-
         List<CartItem> cartItems = cart.getItems();
+
+        if(cartItems.isEmpty()) throw new EmptyCartException();
+
+        validateStock(cartItems);
+
         BigDecimal total = cartItems.stream()
                 .map((item) -> item.getProduct().getPrice()
                         .multiply(BigDecimal.valueOf(item.getQuantity())))
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        //if find pending order
+        //if we find pending order
         Optional<Order> pendingOrder = orderRepo.findByUserAndStatus(user, Status.PENDING);
 
         if(pendingOrder.isPresent()){
