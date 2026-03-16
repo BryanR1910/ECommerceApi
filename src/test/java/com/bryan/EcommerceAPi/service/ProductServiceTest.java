@@ -240,10 +240,10 @@ class ProductServiceTest {
         // Create update DTO with some null fields
         UpdateProductRequestDto updateDtoWithNulls = new UpdateProductRequestDto(
             null, // name is null
-                null, // description is not null
+                null, // description is null
                 null, // price is null
                 null, // stock is null
-                null, // imageUrl is not null
+                null, // imageUrl is null
                 null // category is null
         );
 
