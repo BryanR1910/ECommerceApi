@@ -12,6 +12,6 @@ public interface CartRepo extends JpaRepository<Cart, Long> {
 
     Optional<Cart> findByUser(User user);
 
-    @Query("SELECT c FROM Cart c JOIN FETCH c.items i JOIN FETCH i.product WHERE c.user = :user")
+    @Query("SELECT c FROM Cart c LEFT JOIN FETCH c.items i LEFT JOIN FETCH i.product WHERE c.user = :user")
     Optional<Cart> findByUserWithItems(@Param("user") User user);
 }

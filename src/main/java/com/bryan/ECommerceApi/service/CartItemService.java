@@ -48,7 +48,7 @@ public class CartItemService {
         cart.getItems().add(item);
     }
 
-    public void deleteItem(Long cartItemId, Cart cart){
+    public void deleteItem(Long cartItemId){
         CartItem cartItem = cartItemRepo.findById(cartItemId).orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", cartItemId));
         cartItemRepo.delete(cartItem);
     }

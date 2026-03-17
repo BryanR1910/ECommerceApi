@@ -45,9 +45,8 @@ public class CartService {
 
     public void deleteItem(Long cartItemId, String email){
         User user = userService.findByEmail(email);
-        Cart cart = cartRepo.findByUser(user).orElseThrow(() -> new ResourceNotFoundException("Cart", "User", email));
 
-        cartItemService.deleteItem(cartItemId, cart);
+        cartItemService.deleteItem(cartItemId);
     }
 
 
